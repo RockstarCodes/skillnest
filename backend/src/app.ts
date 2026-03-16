@@ -22,7 +22,18 @@ export function createApp() {
 
   app.use(
     cors({
-      origin: env.CORS_ORIGIN.split(",").map((s) => s.trim()),
+      origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+  
+        if (
+          origin.includes("vercel.app") ||
+          env.CORS_ORIGIN.split(",").map((s) => s.trim()).includes(origin)
+        ) {
+          return callback(null, true);
+        }
+  
+        return callback(new Error("Not allowed by CORS"));
+      },
       credentials: true
     })
   );
