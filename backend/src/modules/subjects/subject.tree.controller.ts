@@ -2,34 +2,42 @@ import { Request, Response } from "express";
 import { dbPool } from "../../config/db";
 
 export async function getSubjectTree(req: Request, res: Response) {
-  const subjectId = Number(req.params.subjectId);
+  try {
+    const subjectId = req.params.id;
 
-  const [sections]: any = await dbPool.query(
-    `
-    SELECT id, title, order_index
-    FROM sections
-    WHERE subject_id = ?
-    ORDER BY order_index
-    `,
-    [subjectId]
-  );
-
-  for (const section of sections) {
-    const [videos]: any = await dbPool.query(
+    const [sections]: any = await dbPool.query(
       `
-      SELECT id, title, youtube_url, order_index
-      FROM videos
-      WHERE section_id = ?
-      ORDER BY order_index
+      SELECT id, title
+      FROM sections
+      WHERE subject_id = ?
+      ORDER BY order_index ASC
       `,
-      [section.id]
+      [subjectId]
     );
 
-    section.videos = videos;
-  }
+    for (const section of sections) {
+      const [videos]: any = await dbPool.query(
+        `
+        SELECT id, title, youtube_url
+        FROM videos
+        WHERE section_id = ?
+        ORDER BY order_index ASC
+        `,
+        [section.id]
+      );
 
-  res.json({
-    subjectId,
-    sections
-  });
+      section.videos = videos;
+    }
+
+    res.json({
+      sections
+    });
+
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      error: "INTERNAL_SERVER_ERROR"
+    });
+  }
 }
