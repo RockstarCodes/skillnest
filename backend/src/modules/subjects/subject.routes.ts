@@ -3,7 +3,4 @@ import { getSubjects } from "./subject.controller";
 
 export const subjectRoutes = Router();
 
-/*
-  GET /api/subjects
-*/
 subjectRoutes.get("/", getSubjects);

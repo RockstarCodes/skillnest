@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { pool } from "../../config/db";
+import { dbPool } from "../../config/db";
 
 export async function getSubjects(
   _req: Request,
@@ -7,9 +7,9 @@ export async function getSubjects(
   next: NextFunction
 ) {
   try {
-    const [rows] = await pool.query(
+    const [rows] = await dbPool.query(
       `
-      SELECT 
+      SELECT
         id,
         title,
         slug,
@@ -23,7 +23,7 @@ export async function getSubjects(
     );
 
     res.status(200).json(rows);
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 }
