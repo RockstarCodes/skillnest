@@ -9,7 +9,8 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "seed": "ts-node src/seed/seedCourses.ts"
+    "seed": "ts-node src/seed/seedCourses.ts",
+    "init-db": "ts-node src/scripts/initDb.ts"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

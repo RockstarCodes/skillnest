@@ -21,14 +21,20 @@ export function createApp() {
   app.use(express.json({ limit: "1mb" }));
   app.use(cookieParser());
 
+  const allowedOrigins = env.CORS_ORIGIN.split(",").map((s) => s.trim());
+
   app.use(
     cors({
       origin: (origin, callback) => {
+        // allow server-to-server calls
         if (!origin) return callback(null, true);
 
-        const allowedOrigins = env.CORS_ORIGIN.split(",").map((s) => s.trim());
+        // allow Vercel preview deployments
+        if (typeof origin === "string" && origin.includes("vercel.app")) {
+          return callback(null, true);
+        }
 
-        if (origin.includes("vercel.app") || allowedOrigins.includes(origin)) {
+        if (typeof origin === "string" && allowedOrigins.includes(origin)) {
           return callback(null, true);
         }
 
