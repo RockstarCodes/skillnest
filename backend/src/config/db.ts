@@ -10,7 +10,10 @@ export const dbPool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  decimalNumbers: true
+  decimalNumbers: true,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 export async function assertDbConnection(): Promise<void> {
