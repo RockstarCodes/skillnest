@@ -1,29 +1,17 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { dbPool } from "../../config/db";
 
-export async function getSubjects(
-  _req: Request,
-  res: Response,
-  next: NextFunction
-) {
+export async function getSubjects(req: Request, res: Response) {
   try {
-    const [rows] = await dbPool.query(
-      `
-      SELECT
-        id,
-        title,
-        slug,
-        description,
-        created_at,
-        updated_at
-      FROM subjects
-      WHERE is_published = 1
-      ORDER BY created_at DESC
-      `
-    );
+    const [rows] = await dbPool.query("SELECT * FROM subjects");
 
-    res.status(200).json(rows);
+    res.json(rows);
   } catch (err) {
-    next(err);
+    console.error("Subjects query error:", err);
+
+    res.status(500).json({
+      error: "SUBJECT_QUERY_FAILED",
+      details: err
+    });
   }
 }
