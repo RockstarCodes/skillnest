@@ -16,36 +16,37 @@ type Section = {
 };
 
 export default function SubjectPage({ params }: any) {
+  const { subjectId } = params;
+
   const [sections, setSections] = useState<Section[]>([]);
   const [currentVideo, setCurrentVideo] = useState<Video | null>(null);
 
   useEffect(() => {
-    fetch(
-      `https://skillnest-api.onrender.com/api/subjects/${params.subjectId}/tree`
-    )
+    fetch(`https://skillnest-api.onrender.com/api/subjects/${subjectId}/tree`)
       .then((res) => res.json())
       .then((data) => {
         setSections(data.sections);
 
-        if (data.sections[0]?.videos[0]) {
+        if (data.sections?.[0]?.videos?.[0]) {
           setCurrentVideo(data.sections[0].videos[0]);
         }
       });
-  }, [params.subjectId]);
+  }, [subjectId]);
 
   return (
-    <div className="flex max-w-6xl mx-auto py-10 gap-8">
+    <div className="max-w-6xl mx-auto py-10 flex gap-8">
+
       {/* Sidebar */}
-      <div className="w-64 border rounded p-4">
+      <div className="w-64 border rounded-lg p-4">
         {sections.map((section) => (
-          <div key={section.id} className="mb-4">
+          <div key={section.id} className="mb-6">
             <h3 className="font-semibold mb-2">{section.title}</h3>
 
             {section.videos.map((video) => (
               <div
                 key={video.id}
-                className="cursor-pointer text-sm mb-1 hover:underline"
                 onClick={() => setCurrentVideo(video)}
+                className="cursor-pointer text-sm mb-2 hover:underline"
               >
                 {video.title}
               </div>
@@ -54,7 +55,7 @@ export default function SubjectPage({ params }: any) {
         ))}
       </div>
 
-      {/* Video Player */}
+      {/* Video Area */}
       <div className="flex-1">
         {currentVideo && (
           <>
