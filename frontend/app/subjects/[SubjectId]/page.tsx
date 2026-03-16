@@ -12,7 +12,7 @@ type Video = {
 type Section = {
   id: number;
   title: string;
-  videos: Video[];
+  videos?: Video[];
 };
 
 export default function Page({
@@ -29,29 +29,33 @@ export default function Page({
     )
       .then((res) => res.json())
       .then((data) => {
-        if (!data.sections || data.sections.length === 0) {
-          console.warn("No sections returned");
+        console.log("API DATA:", data);
+
+        if (!data || !Array.isArray(data.sections)) {
+          console.warn("Invalid API response");
           return;
         }
 
         setSections(data.sections);
 
-        const firstSection = data.sections[0];
-
-        if (firstSection.videos && firstSection.videos.length > 0) {
-          setCurrentVideo(firstSection.videos[0]);
+        if (
+          data.sections.length > 0 &&
+          data.sections[0].videos &&
+          data.sections[0].videos.length > 0
+        ) {
+          setCurrentVideo(data.sections[0].videos[0]);
         }
       })
-      .catch((err) => {
-        console.error("Failed to load subject:", err);
-      });
+      .catch((err) => console.error(err));
   }, [params.subjectId]);
 
   return (
     <div className="max-w-6xl mx-auto py-10 flex gap-8">
-      
+
       {/* Sidebar */}
       <div className="w-64 border rounded-lg p-4">
+        {sections.length === 0 && <p>No lessons yet</p>}
+
         {sections.map((section) => (
           <div key={section.id} className="mb-6">
             <h3 className="font-semibold mb-2">{section.title}</h3>
@@ -69,7 +73,7 @@ export default function Page({
         ))}
       </div>
 
-      {/* Video Area */}
+      {/* Video Player */}
       <div className="flex-1">
         {currentVideo ? (
           <>
@@ -80,7 +84,7 @@ export default function Page({
             <VideoPlayer youtubeUrl={currentVideo.youtube_url} />
           </>
         ) : (
-          <p>Select a lesson to begin.</p>
+          <p>Select a lesson</p>
         )}
       </div>
     </div>
