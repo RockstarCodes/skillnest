@@ -4,6 +4,7 @@ import cors from "cors";
 import express from "express";
 import helmet from "helmet";
 
+import { subjectRoutes } from "./modules/subjects/subject.routes";
 import { env } from "./config/env";
 import { requestLogger } from "./middleware/requestLogger";
 import { errorHandler } from "./middleware/errorHandler";
@@ -15,6 +16,7 @@ export function createApp() {
 
   app.disable("x-powered-by");
 
+  
   app.use(helmet());
   app.use(compression());
   app.use(express.json({ limit: "1mb" }));
@@ -44,6 +46,7 @@ export function createApp() {
 
   app.use("/api/health", healthRoutes);
   app.use("/api/auth", authRoutes);
+  app.use("/api/subjects", subjectRoutes);
 
   app.use(errorHandler);
 
